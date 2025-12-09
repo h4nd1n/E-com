@@ -12,9 +12,11 @@ class OrderRepository:
     async def create(self, *, item: str, amount: float, currency: str) -> Order:
         order = Order(item=item, amount=amount, currency=currency, status="created")
         self.session.add(order)
-        await self.session.flush()
+
         await self.session.commit()
+        await self.session.refresh(order)
         self.session.expunge(order)
+
         return order
 
     async def get(self, order_id: int) -> Order:

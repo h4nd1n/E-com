@@ -13,6 +13,7 @@ class PaymentRepository:
         payment = await self.session.get(Payment, payment_id)
         if not payment:
             raise PaymentNotFound(f"Платеж {payment_id} не найден")
+        await self.session.refresh(payment)
         self.session.expunge(payment)
         return payment
 
@@ -36,5 +37,6 @@ class PaymentRepository:
                 update(Order).where(Order.id == order_id).values(status="payment_requested")
             )
 
+        await self.session.refresh(payment)
         self.session.expunge(payment)
         return payment

@@ -3,10 +3,12 @@ from types import SimpleNamespace
 
 import httpx
 import pytest
+import pytest_asyncio
 
-from app import config
 from app.services import analytics as analytics_service
 import app.main as main
+
+from app import config
 
 
 class FakeKafkaPublisher:
@@ -56,7 +58,7 @@ class FakeAsyncClient:
         return FakeResponse({"metric": params.get("metric"), "rows": []})
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def test_app(monkeypatch, tmp_path):
     # Подменяем конфиг на изолированную SQLite и тестовый HTTP сервис аналитики.
     config.settings.database_url = f"sqlite+aiosqlite:///{tmp_path/'test.db'}"
@@ -72,8 +74,10 @@ async def test_app(monkeypatch, tmp_path):
     monkeypatch.setattr(analytics_service, "httpx", SimpleNamespace(AsyncClient=FakeAsyncClient))
 
     app = main.create_app()
-    transport = httpx.ASGITransport(app=app, lifespan="on")
-    client = httpx.AsyncClient(transport=transport, base_url="http://test")
+    lifespan = app.router.lifespan_context(app)
+    await lifespan.__aenter__()
+    transport = httpx.ASGITransport(app=app)
+    client = httpx.AsyncClient(transport=transport, base_url="http://testserver")
 
     try:
         yield {"client": client, "publisher": fake_publisher}

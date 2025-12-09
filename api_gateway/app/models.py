@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import declarative_base, relationship
@@ -14,7 +14,7 @@ class Order(Base):
     amount = Column(Float, nullable=False)
     currency = Column(String(3), nullable=False)
     status = Column(String, nullable=False, default="created")
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(UTC))
 
     payments = relationship("Payment", back_populates="order")
 
@@ -27,6 +27,6 @@ class Payment(Base):
     amount = Column(Float, nullable=False)
     method = Column(String, nullable=False)
     status = Column(String, nullable=False, default="requested")
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(UTC))
 
     order = relationship("Order", back_populates="payments")
