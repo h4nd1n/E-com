@@ -1,0 +1,6 @@
+# Минимальные зависимости orders_service.
+aiokafka
+SQLAlchemy
+aiosqlite
+environs
+pydantic
