@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+pydantic
+environs
+aiokafka
+aiosqlite
+sqlalchemy>=2.0
+httpx
