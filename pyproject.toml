@@ -1,7 +1,7 @@
 [tool.pytest.ini_options]
 testpaths =[
     "api_gateway/tests",
-    "services/notifications_service/tests"
+    "orders_service/tests",
 ]
 # Если тесты называются по шаблону
 python_files = "test_*.py"
